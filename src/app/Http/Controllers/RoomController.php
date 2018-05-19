@@ -14,7 +14,7 @@ class RoomController extends Controller
 
     public function show(Room $room)
     {
-        $room->load('seats.user');
+        $room->load(['seats.user', 'reservations']);
         return $room;
     }
 

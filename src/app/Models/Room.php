@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Seat;
+use App\Models\Reservation;
 
 class Room extends Model
 {
@@ -14,6 +15,11 @@ class Room extends Model
     public function seats()
     {
         return $this->hasMany(Seat::class);
+    }
+
+    public function reservations()
+    {
+        return $this->hasManyThrough(Reservation::class, Seat::class);
     }
 
     public function getLayoutAttribute()
