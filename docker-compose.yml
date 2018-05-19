@@ -1,0 +1,37 @@
+version: '3'
+services:
+  db:
+    image: mariadb:10.2
+    container_name: db
+    ports:
+        - 3306:3306
+    environment:
+        MYSQL_DATABASE: laravel-boilerplate
+        MYSQL_USER: user
+        MYSQL_PASSWORD: user
+        MYSQL_ROOT_PASSWORD: root
+    volumes:
+        - mysqldata:/var/lib/mysql
+    networks:
+        - boilerplatenet
+
+  nginx-php:
+    build:
+        context: .
+    container_name: nginx-php
+    ports:
+        - 443:443
+        - 80:80
+    links:
+            - db:db
+    volumes:
+        - ./src:/app/
+        - ./config/default.conf:/opt/docker/etc/nginx/vhost.conf
+    networks:
+        - boilerplatenet
+
+volumes:
+  mysqldata:
+
+networks:
+  boilerplatenet:
