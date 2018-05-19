@@ -74,6 +74,8 @@ class UserController extends Controller
             'time_end' => $timeEnd
         ]);
 
+        \Websocket::sendToRoom($seat->room_id, Websocket::EVENT_ROOMS_UPDATED, $seat->room);
+
         return compact(['user', 'reservation']);
     }
 }
