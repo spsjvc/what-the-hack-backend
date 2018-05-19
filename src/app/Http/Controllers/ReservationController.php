@@ -8,6 +8,7 @@ use App\Services\WebsocketGateway\Websocket;
 use App\Models\Seat;
 use App\Models\Reservation;
 use Carbon\Carbon;
+use Auth;
 
 class ReservationController extends Controller
 {
@@ -62,5 +63,19 @@ class ReservationController extends Controller
         ->get(['seats.*']);
 
         return $seats;
+    }
+
+    public function currentUserFutureReservations()
+    {
+        $userId = Auth::user()->id;
+        $timeOffset = config('reservation.time_offset');
+        $now = Carbon::now();
+        $now->second = 0;
+
+        $futureReservations = Reservation::where('user_id', $userId)
+                                         ->where('time_start', '>', $now)
+                                         ->orWhere('time_start', '>', $now->subMinutes($timeOffset))
+                                         ->get();
+        return $futureReservations;
     }
 }
