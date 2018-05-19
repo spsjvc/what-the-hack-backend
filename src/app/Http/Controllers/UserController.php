@@ -21,13 +21,23 @@ class UserController extends Controller
                             ->whereBetween('time_start', [ Carbon::now()->subMinutes($timeOffset), Carbon::now()->addMinutes($timeOffset) ])
                             ->first();
 
-        if(isset($reservation) && !isset($reservation->seat->user_id)) {
+        if(isset($reservation)) {
             $seat = $reservation->seat;
-            $seat->update(['user_id' => $user->id]);
-            \Websocket::sendToRoom($seat->room_id, Websocket::EVENT_ROOMS_UPDATED, $seat->room);
-            return compact(['user', 'reservation']);
+            if (!isset($reservation->seat->user_id)) {
+                $seat->update(['user_id' => $user->id]);
+                \Websocket::sendToRoom($seat->room_id, Websocket::EVENT_ROOMS_UPDATED, $seat->room);
+                return compact(['user', 'reservation']);
+            }
+
+            if ($reservation->seat->user_id == $user->id) {
+                $seat->update(['user_id' => null]);
+                $reservation->delete();
+                \Websocket::sendToRoom($seat->room_id, Websocket::EVENT_ROOMS_UPDATED, $seat->room);
+                return compact(['user', 'reservation']);
+            }
         }
 
+        $reservation = null;
         return compact(['user', 'reservation']);
     }
 }
