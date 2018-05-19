@@ -22,6 +22,8 @@ services:
     ports:
         - 443:443
         - 80:80
+    environment:
+        PHP_DATE_TIMEZONE: 'Europe/Belgrade'
     links:
             - db:db
             - sockets:sockets
