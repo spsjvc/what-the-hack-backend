@@ -13,11 +13,10 @@ class SeatsSeeder extends Seeder
     public function run()
     {
         for ($i = 1; $i <=3; $i++) {
-            for ($j = 1; $j <= 30; $j++) {
+            for ($j = 1; $j <= 25; $j++) {
                 Seat::create([
                     'number' => $j,
-                    'room_id' => $i,
-                    'is_taken' => 0
+                    'room_id' => $i
                 ]);
             }
         }

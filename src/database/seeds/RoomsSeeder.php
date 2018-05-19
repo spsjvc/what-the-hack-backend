@@ -14,17 +14,23 @@ class RoomsSeeder extends Seeder
     {
         Room::create([
             'name' => 'Room 1',
-            'faculty' => 'FTN'
+            'faculty' => 'FTN',
+            'rows' => 5,
+            'columns' => 5
         ]);
 
         Room::create([
             'name' => 'Room 2',
-            'faculty' => 'FTN'
+            'faculty' => 'FTN',
+            'rows' => 5,
+            'columns' => 5
         ]);
 
         Room::create([
             'name' => 'Room 3',
-            'faculty' => 'FTN'
+            'faculty' => 'FTN',
+            'rows' => 5,
+            'columns' => 5
         ]);
     }
 }

@@ -17,6 +17,8 @@ class CreateTableRooms extends Migration
             $table->increments('id');
             $table->string('name');
             $table->string('faculty');
+            $table->unsignedInteger('rows');
+            $table->unsignedInteger('columns');
             $table->timestamps();
         });
     }

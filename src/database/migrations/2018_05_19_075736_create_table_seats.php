@@ -17,10 +17,11 @@ class CreateTableSeats extends Migration
             $table->increments('id');
             $table->unsignedInteger('number');
             $table->unsignedInteger('room_id');
-            $table->boolean('is_taken')->default(false);
+            $table->unsignedInteger('user_id')->nullable();
             $table->timestamps();
 
             $table->foreign('room_id')->references('id')->on('rooms')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 

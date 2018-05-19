@@ -13,16 +13,15 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::group([
+Route::group(['middleware' => 'api'], function () {
+    Route::group(['prefix' => 'auth'], function () {
+        Route::post('register', 'Auth\AuthController@register');
+        Route::post('login', 'Auth\AuthController@login');
+        Route::post('logout', 'Auth\AuthController@logout');
+        Route::post('me', 'Auth\AuthController@me');
+    });
 
-    'middleware' => ['api', 'jsonify'],
-    'prefix' => 'auth'
-
-], function ($router) {
-
-    Route::post('register', 'Auth\AuthController@register');
-    Route::post('login', 'Auth\AuthController@login');
-    Route::post('logout', 'Auth\AuthController@logout');
-    Route::post('me', 'Auth\AuthController@me');
-
+    Route::group([], function() {
+        Route::resource('rooms', 'RoomController');
+    });
 });
