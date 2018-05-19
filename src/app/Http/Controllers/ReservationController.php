@@ -7,6 +7,7 @@ use App\Http\Requests\StoreReservationRequest;
 use App\Services\WebsocketGateway\Websocket;
 use App\Models\Seat;
 use App\Models\Reservation;
+use Carbon\Carbon;
 
 class ReservationController extends Controller
 {
@@ -24,6 +25,11 @@ class ReservationController extends Controller
             'time_start',
             'time_end'
         ]);
+
+        $payload['time_start'] = new Carbon($payload['time_start']);
+        $payload['time_start']->second = 0;
+        $payload['time_end'] = new Carbon($payload['time_end']);
+        $payload['time_end']->second = 0;
 
         $reservation = Reservation::create($payload);
         $room = $reservation->seat->room;
