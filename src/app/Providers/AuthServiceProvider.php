@@ -25,6 +25,6 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        //
+        app('tymon.jwt.payload.factory')->setDefaultClaims([]);
     }
 }

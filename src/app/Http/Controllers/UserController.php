@@ -13,7 +13,7 @@ class UserController extends Controller
         \JWTAuth::setToken($request->get('access_token'));
         $tokenPayload = \JWTAuth::getPayload();
 
-        $user = User::find($tokenPayload['user']->id);
+        $user = User::find($tokenPayload['sub']);
 
         $reservation = $user->reservation()->whereBetween('time_start', [ Carbon::now()->subMinutes(30), Carbon::now()->addMinutes(30) ])->first();
 
