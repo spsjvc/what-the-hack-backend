@@ -15,9 +15,10 @@ class UserController extends Controller
         $tokenPayload = \JWTAuth::getPayload();
 
         $user = User::find($tokenPayload['sub']);
+        $timeOffset = config('reservation.time_offset');
 
         $reservation = $user->reservation()
-                            ->whereBetween('time_start', [ Carbon::now()->subMinutes(30), Carbon::now()->addMinutes(30) ])
+                            ->whereBetween('time_start', [ Carbon::now()->subMinutes($timeOffset), Carbon::now()->addMinutes($timeOffset) ])
                             ->first();
 
         if(isset($reservation) && !isset($reservation->seat->user_id)) {
