@@ -6,6 +6,7 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use App\Models\Seat;
+use App\Models\Reservation;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -46,11 +47,20 @@ class User extends Authenticatable implements JWTSubject
      */
     public function getJWTCustomClaims()
     {
-        return [];
+        return [
+            'user' => [
+                'id' => $this->id
+            ]
+        ];
     }
 
     public function seat()
     {
         return $this->hasOne(Seat::class);
+    }
+
+    public function reservation()
+    {
+        return $this->hasMany(Reservation::class);
     }
 }
