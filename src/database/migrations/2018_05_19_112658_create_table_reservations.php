@@ -20,6 +20,9 @@ class CreateTableReservations extends Migration
             $table->timestamp('time_start')->default(DB::raw('CURRENT_TIMESTAMP'));;
             $table->timestamp('time_end')->default(DB::raw('CURRENT_TIMESTAMP'));;
             $table->timestamps();
+
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('seat_id')->references('id')->on('seats')->onDelete('cascade');
         });
     }
 
