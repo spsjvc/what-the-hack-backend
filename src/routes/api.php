@@ -26,5 +26,6 @@ Route::group(['middleware' => 'api'], function () {
         Route::resource('reservations', 'ReservationController');
         Route::post('reservations/get-available-seats', 'ReservationController@getAvailableSeats');
         Route::post('users/get-user-by-token', 'UserController@getUserByToken');
+        Route::post('users/enter-without-reservation', 'UserController@enterWithoutReservation');
     });
 });

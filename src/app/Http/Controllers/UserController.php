@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Services\WebsocketGateway\Websocket;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Seat;
 use Carbon\Carbon;
 
 class UserController extends Controller
@@ -17,7 +18,7 @@ class UserController extends Controller
         $user = User::find($tokenPayload['sub']);
         $timeOffset = config('reservation.time_offset');
 
-        $reservation = $user->reservation()
+        $reservation = $user->reservations()
                             ->whereBetween('time_start', [ Carbon::now()->subMinutes($timeOffset), Carbon::now()->addMinutes($timeOffset) ])
                             ->first();
 
@@ -38,6 +39,41 @@ class UserController extends Controller
         }
 
         $reservation = null;
+        return compact(['user', 'reservation']);
+    }
+
+    public function enterWithoutReservation(Request $request)
+    {
+        \JWTAuth::setToken($request->get('access_token'));
+        $tokenPayload = \JWTAuth::getPayload();
+
+        $user = User::find($tokenPayload['sub']);
+        $until = explode(':', $request->get('until'));
+        $seatId = $request->get('seat_id');
+
+        $timeStart = Carbon::now();
+        $timeStart->second(0);
+
+        $timeEnd = Carbon::now();
+        $timeEnd->setTime($until[0], $until[1]);
+
+        if ($timeEnd->lte($timeStart)) {
+            return response()->json('Wrong time end', 422);
+        }
+
+        $seat = Seat::findOrFail($seatId);
+        if ($seat->user_id) {
+            return response()->json('Seat already reserved', 422);
+        }
+
+        $seat->update([ 'user_id' => $user->id ]);
+
+        $reservation = $user->reservations()->create([
+            'seat_id' => $seatId,
+            'time_start' => $timeStart,
+            'time_end' => $timeEnd
+        ]);
+
         return compact(['user', 'reservation']);
     }
 }
