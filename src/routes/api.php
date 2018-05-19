@@ -23,5 +23,6 @@ Route::group(['middleware' => 'api'], function () {
 
     Route::group([], function() {
         Route::resource('rooms', 'RoomController');
+        Route::resource('reservations', 'ReservationController');
     });
 });
