@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Reservation extends Model
 {
-    protected $fillable = [ 'user_id', 'seat_id', 'time_start', 'time_end' ];
+    protected $fillable = [ 'user_id', 'seat_id', 'time_start', 'time_end', 'subject' ];
 
     public function seat()
     {
