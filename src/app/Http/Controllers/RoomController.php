@@ -14,7 +14,8 @@ class RoomController extends Controller
 
     public function show(Room $room)
     {
-        return $room;
+
+        return $room->with('seats.user')->get();
     }
 
 }
