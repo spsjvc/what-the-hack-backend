@@ -1,0 +1,14 @@
+{
+  "name": "WhatTheHack-WebSockets",
+  "version": "1.0.0",
+  "description": "",
+  "main": "ws.js",
+  "scripts": {
+    "start": "WS_PORT=9292 node ws.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "deepstream.io": "^3.1.2"
+  }
+}

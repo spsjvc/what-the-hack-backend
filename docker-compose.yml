@@ -24,9 +24,19 @@ services:
         - 80:80
     links:
             - db:db
+            - sockets:sockets
     volumes:
         - ./src:/app/
         - ./config/default.conf:/opt/docker/etc/nginx/vhost.conf
+    networks:
+        - boilerplatenet
+
+  sockets:
+    build: websockets
+    container_name: sockets
+    ports:
+        - 8080:8080
+        - 6020:6020
     networks:
         - boilerplatenet
 
