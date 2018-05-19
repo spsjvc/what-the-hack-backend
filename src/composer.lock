@@ -1,11 +1,54 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f2d9e6ec1c09918f1f3130aa31e04472",
+    "content-hash": "f4030f77296adac27c63b9ebfdf9d325",
     "packages": [
+        {
+            "name": "deepstreamhub/deepstream.io-client-php",
+            "version": "v1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/deepstreamIO/deepstream.io-client-php.git",
+                "reference": "c979ec7f5fde35f79c6f735bdc87811f7ea2f05c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/deepstreamIO/deepstream.io-client-php/zipball/c979ec7f5fde35f79c6f735bdc87811f7ea2f05c",
+                "reference": "c979ec7f5fde35f79c6f735bdc87811f7ea2f05c",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0|^7.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Deepstreamhub\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "deepstreamHub GmbH",
+                    "homepage": "https://deepstreamhub.com/"
+                }
+            ],
+            "description": "the php client for deepstreamHub",
+            "homepage": "https://github.com/deepstreamIO/deepstream.io-client-php",
+            "keywords": [
+                "datasync",
+                "pubsub",
+                "realtime",
+                "rpc"
+            ],
+            "time": "2017-07-03T08:56:34+00:00"
+        },
         {
             "name": "dnoegel/php-xdg-base-dir",
             "version": "0.1",
