@@ -65,7 +65,7 @@ return [
     |
     */
 
-    'timezone' => 'Europe\Belgrade',
+    'timezone' => 'Europe/Belgrade',
 
     /*
     |--------------------------------------------------------------------------
