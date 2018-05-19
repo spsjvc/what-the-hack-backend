@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+<<<<<<< HEAD
+use App\Models\Reservation;
 use App\Http\Requests\StoreReservationRequest;
 use App\Services\WebsocketGateway\Websocket;
-use App\Models\Seat;
-use App\Models\Reservation;
 
 class ReservationController extends Controller
 {
@@ -31,8 +31,13 @@ class ReservationController extends Controller
 
         \Websocket::sendToRoom($room->id, Websocket::EVENT_ROOMS_UPDATED, $room);
         return $reservation;
-    }
+=======
+use App\Models\Seat;
+use App\Models\Reservation;
+use App\Models\Room;
 
+class ReservationController extends Controller
+{
     public function getAvailableSeats(Request $request)
     {
         $startDate = $request->get('time_start');
@@ -56,5 +61,6 @@ class ReservationController extends Controller
         ->get(['seats.*']);
 
         return $seats;
+>>>>>>> 96f95e83a4e9040f2944be67511190609df182ab
     }
 }

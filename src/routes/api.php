@@ -24,5 +24,6 @@ Route::group(['middleware' => 'api'], function () {
     Route::group([], function() {
         Route::resource('rooms', 'RoomController');
         Route::resource('reservations', 'ReservationController');
+        Route::post('reservations/get-available-seats', 'ReservationController@getAvailableSeats');
     });
 });
