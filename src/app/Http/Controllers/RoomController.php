@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Room;
+use App\Models\Seat;
 use App\Services\WebsocketGateway\Websocket;
 class RoomController extends Controller
 {
@@ -28,6 +29,14 @@ class RoomController extends Controller
                 'columns'
             ]);
         $room = Room::create($payload);
+
+        $numOfSeats = $room->rows * $room->columns;
+        for ($i = 1; $i <= $numOfSeats; $i++) {
+            Seat::create([
+                'number' => $i,
+                'room_id' => $room->id
+            ]);
+        }
         \Websocket::sendToPublic(Websocket::EVENT_ROOMS_CREATED, $room);
         return $room;
     }
