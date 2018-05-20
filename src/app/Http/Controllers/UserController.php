@@ -6,6 +6,7 @@ use App\Services\WebsocketGateway\Websocket;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Seat;
+use App\Models\Reservation;
 use Carbon\Carbon;
 
 class UserController extends Controller
