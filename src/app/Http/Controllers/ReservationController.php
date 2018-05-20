@@ -57,7 +57,7 @@ class ReservationController extends Controller
         $roomId = $request->get('room_id');
         $availableSeats = $this->_getAvailableSeats($roomId, $startDate, $endDate);
         $availableSeatIds = array_map(function ($seat) {
-            return $seat->id;
+            return $seat['id'];
         }, $availableSeats);
 
         $allSeatIds = Seat::where('room_id', $roomId)
@@ -88,22 +88,25 @@ class ReservationController extends Controller
     }
 
     protected function _getAvailableSeats($roomId, $startDate, $endDate) {
-        $seats = Seat::where('room_id', $roomId)->get();
-        $freeSeats = [];
-        foreach ($seats as $seat) {
-            $reservations = Reservation::where('seat_id', $seat->id)->get();
-            $isOk = true;
-            foreach ($reservations as $reservation) {
-                if ($reservation->end_date >= $startDate || $reservation->start_date <= $endDate) {
-                    $isOk = false;
-                    break;
-                }
-            }
-            if ($isOk) {
-                array_push($freeSeats, $seat);
-            }
-        }
+        $seats = Seat::leftJoin('reservations', function($join) use ($roomId, $startDate, $endDate) {
+            $join->on('seats.id', '=', 'reservations.seat_id');
+        })
+        ->where(function ($query) use ($roomId, $startDate, $endDate) {
+            $query->where('seats.room_id', $roomId)
+            ->where(function ($query) use ($startDate, $endDate) {
+                $query->where(function ($query) use ($startDate, $endDate) {
+                    $query->whereRaw('? NOT BETWEEN reservations.time_start AND reservations.time_end', $startDate)
+                            ->whereRaw('? NOT BETWEEN reservations.time_start AND reservations.time_end', $endDate);
+                })
+                ->orWhere(function ($query) {
+                    $query->whereNull('time_start')
+                            ->whereNull('time_end');
+                });
+            });
+        })
+        ->get(['seats.*'])
+        ->toArray();
 
-        return $freeSeats;
+        return $seats;
     }
 }
