@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AlterTableReservations extends Migration
+class AlterTableReservationsAddPauseStart extends Migration
 {
     /**
      * Run the migrations.
@@ -14,7 +14,7 @@ class AlterTableReservations extends Migration
     public function up()
     {
         Schema::table('reservations', function (Blueprint $table) {
-            $table->string('subject')->after('time_end')->nullable();
+            $table->timestamp('pause_start')->after('subject')->nullable();
         });
     }
 
@@ -26,7 +26,7 @@ class AlterTableReservations extends Migration
     public function down()
     {
         Schema::table('reservations', function (Blueprint $table) {
-            $table->dropColumn('subject');
+            $table->dropColumn('pause_start');
         });
     }
 }

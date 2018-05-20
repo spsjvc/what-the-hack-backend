@@ -30,5 +30,7 @@ Route::group(['middleware' => 'api'], function () {
         Route::post('reservations/get-taken-seats', 'ReservationController@getTakenSeats');
         Route::post('users/get-user-by-token', 'UserController@getUserByToken');
         Route::post('users/enter-without-reservation', 'UserController@enterWithoutReservation');
+        Route::post('users/exit-from-room', 'UserController@exitFromRoom');
+        Route::post('users/pause', 'UserController@pause');
     });
 });
