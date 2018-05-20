@@ -47,6 +47,42 @@ class ReservationController extends Controller
         $endDate = $request->get('time_end');
         $roomId = $request->get('room_id');
 
+        return $this->_getAvailableSeats($roomId, $startDate, $endDate);
+    }
+
+    public function getTakenSeats(Request $request)
+    {
+        $startDate = $request->get('time_start');
+        $endDate = $request->get('time_end');
+        $roomId = $request->get('room_id');
+        $availableSeats = $this->_getAvailableSeats($roomId, $startDate, $endDate);
+        $availableSeatIds = array_map(function ($seat) {
+            return $seat->id;
+        }, $availableSeats);
+
+        $allSeatIds = Seat::where('room_id', $roomId)
+                               ->pluck('id')
+                               ->toArray();
+
+        return array_values(array_diff($allSeatIds, $availableSeatIds));
+    }
+
+    public function currentUserFutureReservations()
+    {
+        $userId = Auth::user()->id;
+        $timeOffset = config('reservation.time_offset');
+        $now = Carbon::now();
+        $now->second = 0;
+
+        $futureReservations = Reservation::join('seats', 'reservations.seat_id', '=', 'seats.id')
+                                         ->where('reservations.user_id', $userId)
+                                         ->where('reservations.time_start', '>', $now)
+                                         ->orWhere('reservations.time_start', '>', $now->subMinutes($timeOffset))
+                                         ->get();
+        return $futureReservations;
+    }
+
+    protected function _getAvailableSeats($roomId, $startDate, $endDate) {
         $seats = Seat::where('room_id', $roomId)->get();
         $freeSeats = [];
         foreach ($seats as $seat) {
@@ -64,20 +100,5 @@ class ReservationController extends Controller
         }
 
         return $freeSeats;
-    }
-
-    public function currentUserFutureReservations()
-    {
-        $userId = Auth::user()->id;
-        $timeOffset = config('reservation.time_offset');
-        $now = Carbon::now();
-        $now->second = 0;
-
-        $futureReservations = Reservation::join('seats', 'reservations.seat_id', '=', 'seats.id')
-                                         ->where('reservations.user_id', $userId)
-                                         ->where('reservations.time_start', '>', $now)
-                                         ->orWhere('reservations.time_start', '>', $now->subMinutes($timeOffset))
-                                         ->get();
-        return $futureReservations;
     }
 }
