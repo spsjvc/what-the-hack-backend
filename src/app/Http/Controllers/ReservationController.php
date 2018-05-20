@@ -82,7 +82,7 @@ class ReservationController extends Controller
                                             $query->where('reservations.time_start', '>', $now)
                                                     ->orWhere('reservations.time_start', '>', $now->subMinutes($timeOffset));
                                          })
-                                         ->orderBy('reservations.time_start', 'desc')
+                                         ->orderBy('reservations.time_start')
                                          ->get();
         return $futureReservations;
     }
