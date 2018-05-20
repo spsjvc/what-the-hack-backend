@@ -46,23 +46,23 @@ class ReservationController extends Controller
         $endDate = $request->get('time_end');
         $roomId = $request->get('room_id');
 
-        $seats = Seat::leftJoin('reservations', function($join) use ($roomId, $startDate, $endDate) {
-            $join->on('seats.id', '=', 'reservations.seat_id');
-        })
-        ->where(function ($query) use ($roomId, $startDate, $endDate) {
-            $query->where('seats.room_id', $roomId)
-            ->where(function ($query) use ($startDate, $endDate) {
-                $query->whereNotBetween('time_start', [ $startDate, $endDate ])
-                        ->whereNotBetween('time_end', [ $startDate, $endDate ]);
-            })
-            ->orWhere(function ($query) {
-                $query->whereNull('time_start')
-                        ->whereNull('time_end');
-            });
-        })
-        ->get(['seats.*']);
+        $seats = Seat::where('room_id', $roomId)->get();
+        $freeSeats = [];
+        foreach ($seats as $seat) {
+            $reservations = Reservation::where('seat_id', $seat->id)->get();
+            $isOk = true;
+            foreach ($reservations as $reservation) {
+                if ($reservation->end_date >= $startDate || $reservation->start_date <= $endDate) {
+                    $isOk = false;
+                    break;
+                }
+            }
+            if ($isOk) {
+                array_push($freeSeats, $seat);
+            }
+        }
 
-        return $seats;
+        return $freeSeats;
     }
 
     public function currentUserFutureReservations()
