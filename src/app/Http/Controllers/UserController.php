@@ -74,6 +74,18 @@ class UserController extends Controller
             $room = $seat->room;
             $room->load('reservations');
 
+
+            $now = Carbon::now();
+            $reservationEnd = $reservation->time_end;
+            $totalDuration = $reservationEnd->diffInSeconds($now);
+            $HALF_AN_HOUR = 60 * 30;
+            if ($totalDuration > $HALF_AN_HOUR) {
+                $user->decreaseExperience('USER_LOGGED_OUT_EARLIER');
+            } else {
+                $user->increaseExperience('USER_LOGGED_OUT_ON_TIME');
+            }
+
+
             Reservation::where('id', $reservation->id)
                        ->delete();
             \Websocket::sendToRoom($room->id, Websocket::EVENT_ROOMS_UPDATED, $room);
