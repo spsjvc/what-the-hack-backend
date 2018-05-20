@@ -72,9 +72,10 @@ class ReservationController extends Controller
         $now = Carbon::now();
         $now->second = 0;
 
-        $futureReservations = Reservation::where('user_id', $userId)
-                                         ->where('time_start', '>', $now)
-                                         ->orWhere('time_start', '>', $now->subMinutes($timeOffset))
+        $futureReservations = Reservation::join('seats', 'reservations.seat_id', '=', 'seats.id')
+                                         ->where('reservations.user_id', $userId)
+                                         ->where('reservations.time_start', '>', $now)
+                                         ->orWhere('reservations.time_start', '>', $now->subMinutes($timeOffset))
                                          ->get();
         return $futureReservations;
     }
