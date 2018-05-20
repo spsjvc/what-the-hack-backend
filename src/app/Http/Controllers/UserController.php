@@ -32,7 +32,8 @@ class UserController extends Controller
 
             if ($reservation->seat->user_id == $user->id) {
                 $seat->update(['user_id' => null]);
-                $reservation->delete();
+                Reservation::where('id', $reservation->id)
+                           ->delete();
                 \Websocket::sendToRoom($seat->room_id, Websocket::EVENT_ROOMS_UPDATED, $seat->room);
                 return compact(['user', 'reservation']);
             }
