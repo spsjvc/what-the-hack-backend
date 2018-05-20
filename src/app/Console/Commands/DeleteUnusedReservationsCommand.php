@@ -54,31 +54,32 @@ class DeleteUnusedReservationsCommand extends Command
     }
 
     private function invalidateTakenSeats($now) {
-        $dueReservations = Reservation::join('seats', 'reservations.seat_id', '=', 'seats.id')
-                                        ->where('time_end', '<=', $now)
-                                        ->whereNotNull('seats.user_id')
-                                        ->get();
+        $dueReservations = Reservation::where('time_end', '<=', $now)
+                                      ->get();
 
         if (!$dueReservations->isEmpty()) {
             foreach ($dueReservations as $reservation) {
                 $reservationSeat = $reservation->seat;
                 $reservationSeat->update(['user_id' => null]);
+                if ($reservation->seat->user_id !== null) {
+                    $reservation->delete();
+                }
             }
-            Reservation::join('seats', 'reservations.seat_id', '=', 'seats.id')
-                                        ->where('time_end', '<=', $now)
-                                        ->whereNotNull('seats.user_id')
-                                        ->delete();
             $this->info("All reservations that have expired (before $now), but still had user are deleted.");
         }
     }
 
     private function invalidateNotTakenSeats($now) {
         $timeOffset = config('reservation.time_offset');
-        $dueReservations = Reservation::join('seats', 'reservations.seat_id', '=', 'seats.id')
-                                      ->where('time_start', '<=', $now)
-                                      ->where('time_start', '<=', $now->subMinutes($timeOffset))
-                                      ->whereNull('seats.user_id')
-                                      ->delete();
-        $this->info("All reservations that have expired (before $now), but user did not show up are deleted.");
+        $dueReservations = Reservation::where('time_start', '<=', $now->subMinutes($timeOffset))
+                                      ->get();
+        if (!$dueReservations->isEmpty()) {
+            foreach ($dueReservations as $reservation) {
+                if ($reservation->seat->user_id === null) {
+                    $reservation->delete();
+                }
+            }
+            $this->info("All reservations that have expired, but user did not show up are deleted.");
+        }
     }
 }
