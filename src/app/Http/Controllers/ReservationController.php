@@ -78,8 +78,11 @@ class ReservationController extends Controller
 
         $futureReservations = Reservation::join('seats', 'reservations.seat_id', '=', 'seats.id')
                                          ->where('reservations.user_id', $userId)
-                                         ->where('reservations.time_start', '>', $now)
-                                         ->orWhere('reservations.time_start', '>', $now->subMinutes($timeOffset))
+                                         ->where(function ($query) use ($now, $timeOffset) {
+                                            $query->where('reservations.time_start', '>', $now)
+                                                    ->orWhere('reservations.time_start', '>', $now->subMinutes($timeOffset));
+                                         })
+                                         ->orderBy('reservations.time_start', 'desc')
                                          ->get();
         return $futureReservations;
     }
