@@ -84,6 +84,7 @@ class UserController extends Controller
         $room = $seat->room;
         $room->load('reservations');
         \Websocket::sendToRoom($seat->room_id, Websocket::EVENT_ROOMS_UPDATED, $room);
+        $seat->user->increaseExperience(User::USER_LOGGED_IN);
 
         return compact(['user', 'reservation']);
     }
