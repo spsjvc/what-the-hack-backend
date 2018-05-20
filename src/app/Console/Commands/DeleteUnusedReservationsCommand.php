@@ -64,7 +64,7 @@ class DeleteUnusedReservationsCommand extends Command
                 $reservationSeat = $reservation->seat;
                 $reservationSeat->update(['user_id' => null]);
                 if ($reservation->seat->user_id !== null) {
-                    $reservation->user->decreaseExperience(User::USER_DID_NOT_LOGOUT_ON_TIME);
+                    $reservation->user->decreaseExperience('USER_DID_NOT_LOGOUT_ON_TIME');
                     $reservation->delete();
                 }
             }
@@ -79,7 +79,7 @@ class DeleteUnusedReservationsCommand extends Command
         if (!$dueReservations->isEmpty()) {
             foreach ($dueReservations as $reservation) {
                 if ($reservation->seat->user_id === null) {
-                    $reservation->user->decreaseExperience(User::USER_DID_NOT_SHOW_UP);
+                    $reservation->user->decreaseExperience('USER_DID_NOT_SHOW_UP');
                     $reservation->delete();
                 }
             }

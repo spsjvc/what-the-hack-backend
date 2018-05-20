@@ -30,7 +30,7 @@ class UserController extends Controller
             if (!isset($reservation->seat->user_id)) {
                 $seat->update(['user_id' => $user->id]);
                 \Websocket::sendToRoom($seat->room_id, Websocket::EVENT_ROOMS_UPDATED, $room);
-                $reservation->seat->user->increaseExperience(User::USER_LOGGED_IN);
+                $reservation->seat->user->increaseExperience('USER_LOGGED_IN');
                 return compact(['user', 'reservation']);
             }
 
@@ -84,7 +84,7 @@ class UserController extends Controller
         $room = $seat->room;
         $room->load('reservations');
         \Websocket::sendToRoom($seat->room_id, Websocket::EVENT_ROOMS_UPDATED, $room);
-        $seat->user->increaseExperience(User::USER_LOGGED_IN);
+        $seat->user->increaseExperience('USER_LOGGED_IN');
 
         return compact(['user', 'reservation']);
     }
