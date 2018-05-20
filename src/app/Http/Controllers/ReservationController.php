@@ -65,7 +65,8 @@ class ReservationController extends Controller
                                ->toArray();
 
         $takenSeatIds = array_values(array_diff($allSeatIds, $availableSeatIds));
-        return Seat::findMany($takenSeatIds);
+        return Seat::with('user')
+                    ->findMany($takenSeatIds);
     }
 
     public function currentUserFutureReservations()
