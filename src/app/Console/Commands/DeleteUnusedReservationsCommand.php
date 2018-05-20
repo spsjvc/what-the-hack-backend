@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use Carbon\Carbon;
 use App\Models\Reservation;
 use App\Models\Room;
+use App\Models\User;
 use App\Services\WebsocketGateway\Websocket;
 
 class DeleteUnusedReservationsCommand extends Command
@@ -62,6 +63,7 @@ class DeleteUnusedReservationsCommand extends Command
                 $reservationSeat = $reservation->seat;
                 $reservationSeat->update(['user_id' => null]);
                 if ($reservation->seat->user_id !== null) {
+                    $reservation->user->decreaseExperience(User::USER_MISSED_RESERVATION);
                     $reservation->delete();
                 }
             }
@@ -76,6 +78,7 @@ class DeleteUnusedReservationsCommand extends Command
         if (!$dueReservations->isEmpty()) {
             foreach ($dueReservations as $reservation) {
                 if ($reservation->seat->user_id === null) {
+                    $reservation->user->decreaseExperience(User::USER_MISSED_RESERVATION);
                     $reservation->delete();
                 }
             }
