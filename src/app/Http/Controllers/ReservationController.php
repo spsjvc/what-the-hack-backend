@@ -64,7 +64,8 @@ class ReservationController extends Controller
                                ->pluck('id')
                                ->toArray();
 
-        return array_values(array_diff($allSeatIds, $availableSeatIds));
+        $takenSeatIds = array_values(array_diff($allSeatIds, $availableSeatIds));
+        return Seat::findMany($takenSeatIds);
     }
 
     public function currentUserFutureReservations()
