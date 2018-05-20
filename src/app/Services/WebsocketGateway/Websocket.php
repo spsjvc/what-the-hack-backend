@@ -11,9 +11,11 @@ class Websocket {
     protected $client;
 
     const EVENT_ROOMS_UPDATED = 'socket.room.updated';
+    const EVENT_ROOMS_CREATED = 'socket.room.created';
 
     public static $availableEvents = [
-        self::EVENT_ROOMS_UPDATED
+        self::EVENT_ROOMS_UPDATED,
+        self::EVENT_ROOMS_CREATED
     ];
 
     public function __construct() {
@@ -50,5 +52,9 @@ class Websocket {
         foreach ($id as $roomId) {
             $this->send("/rooms/$id", $event, $payload, $skipSender);
         }
+    }
+
+    public function sendToPublic($event, $payload = [], $skipSender = true) {
+        $this->send("/public", $event, $payload, $skipSender);
     }
 }
