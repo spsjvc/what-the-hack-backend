@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use Carbon\Carbon;
 use App\Models\Reservation;
 use App\Models\Room;
+use App\Models\User;
 use App\Services\WebsocketGateway\Websocket;
 
 class DeleteUnusedReservationsCommand extends Command
@@ -49,6 +50,7 @@ class DeleteUnusedReservationsCommand extends Command
 
         $rooms = Room::all();
         foreach ($rooms as $room) {
+            $room->load('reservations');
             \Websocket::sendToRoom($room->id, Websocket::EVENT_ROOMS_UPDATED, $room);
         }
     }
@@ -62,6 +64,7 @@ class DeleteUnusedReservationsCommand extends Command
                 $reservationSeat = $reservation->seat;
                 $reservationSeat->update(['user_id' => null]);
                 if ($reservation->seat->user_id !== null) {
+                    $reservation->user->decreaseExperience('USER_DID_NOT_LOGOUT_ON_TIME');
                     $reservation->delete();
                 }
             }
@@ -76,6 +79,7 @@ class DeleteUnusedReservationsCommand extends Command
         if (!$dueReservations->isEmpty()) {
             foreach ($dueReservations as $reservation) {
                 if ($reservation->seat->user_id === null) {
+                    $reservation->user->decreaseExperience('USER_DID_NOT_SHOW_UP');
                     $reservation->delete();
                 }
             }

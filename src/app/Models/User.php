@@ -13,10 +13,14 @@ class User extends Authenticatable implements JWTSubject
 {
     use Notifiable;
 
-    const USER_MISSED_RESERVATION = 5;
-
     public static $EXPERIENCE_CHANGE_EVENTS = [
-        self::USER_MISSED_RESERVATION
+        // decrease
+        'USER_DID_NOT_SHOW_UP' => 5,
+        'USER_DID_NOT_LOGOUT_ON_TIME' => 2,
+        'USER_LOGGED_OUT_EARLIER' => 3,
+        // increase
+        'USER_LOGGED_IN' => 5,
+        'USER_LOGGED_OUT_ON_TIME' => 5,
     ];
 
     /**
@@ -68,22 +72,14 @@ class User extends Authenticatable implements JWTSubject
     }
 
     public function increaseExperience($event) {
-        if (!in_array($event, self::$EXPERIENCE_CHANGE_EVENTS)) {
-            throw new \InvalidArgumentException("Invalid experience event name: $event");
-        }
-
-        $this->update(['points' => $this->points + $event]);
-        \Websocket::sendToPublic(Websocket::EVENT_USER_EXPERIENCE_CHANGE, $this);
+        $this->update(['points' => $this->points + $this->EXPERIENCE_CHANGE_EVENTS[$event]]);
+        \Websocket::sendToPublic(Websocket::EVENT_USER_EXPERIENCE_CHANGE, ['user' => $this, 'event' => $event]);
     }
 
     public function decreaseExperience($event) {
-        if (!in_array($event, self::$EXPERIENCE_CHANGE_EVENTS)) {
-            throw new \InvalidArgumentException("Invalid experience event name: $event");
-        }
-
-        if (($this->points - $event) >= 0) {
-            $this->update(['points' => $this->points - $event]);
-            \Websocket::sendToPublic(Websocket::EVENT_USER_EXPERIENCE_CHANGE, $this);
+        if (($this->points - $this->EXPERIENCE_CHANGE_EVENTS[$event]) >= 0) {
+            $this->update(['points' => $this->points - $this->EXPERIENCE_CHANGE_EVENTS[$event]]);
+            \Websocket::sendToPublic(Websocket::EVENT_USER_EXPERIENCE_CHANGE, ['user' => $this, 'event' => $event]);
         }
     }
 }

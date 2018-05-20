@@ -28,9 +28,12 @@ class UserController extends Controller
 
         if (isset($reservation)) { // Lik ima rezervaciju
             $seat = $reservation->seat;
+            $room = $seat->room;
+            $room->load('reservations');
             if (!isset($reservation->seat->user_id)) { // Na njegovom mestu niko ne sedi - TEK ULAZI
                 $seat->update(['user_id' => $user->id]);
-                \Websocket::sendToRoom($seat->room_id, Websocket::EVENT_ROOMS_UPDATED, $seat->room);
+                \Websocket::sendToRoom($room->id, Websocket::EVENT_ROOMS_UPDATED, $room);
+                $reservation->seat->user->increaseExperience('USER_LOGGED_IN');
                 return compact(['user', 'reservation', 'inside', 'status']);
             }
 
@@ -68,9 +71,12 @@ class UserController extends Controller
 
             $seat = $reservation->seat;
             $seat->update(['user_id' => null]);
+            $room = $seat->room;
+            $room->load('reservations');
+
             Reservation::where('id', $reservation->id)
                        ->delete();
-            \Websocket::sendToRoom($seat->room_id, Websocket::EVENT_ROOMS_UPDATED, $seat->room);
+            \Websocket::sendToRoom($room->id, Websocket::EVENT_ROOMS_UPDATED, $room);
             return compact(['user', 'reservation', 'inside', 'status']);
         }
     }
@@ -129,7 +135,10 @@ class UserController extends Controller
             'subject' => $subject
         ]);
 
-        \Websocket::sendToRoom($seat->room_id, Websocket::EVENT_ROOMS_UPDATED, $seat->room);
+        $room = $seat->room;
+        $room->load('reservations');
+        \Websocket::sendToRoom($seat->room_id, Websocket::EVENT_ROOMS_UPDATED, $room);
+        $seat->user->increaseExperience('USER_LOGGED_IN');
 
         return compact(['user', 'reservation']);
     }
