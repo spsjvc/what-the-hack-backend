@@ -52,6 +52,7 @@ class UserController extends Controller
         $user = User::find($tokenPayload['sub']);
         $until = explode(':', $request->get('until'));
         $seatId = $request->get('seat_id');
+        $subject = $request->get('subject');
 
         $timeStart = Carbon::now();
         $timeStart->second(0);
@@ -73,7 +74,8 @@ class UserController extends Controller
         $reservation = $user->reservations()->create([
             'seat_id' => $seatId,
             'time_start' => $timeStart,
-            'time_end' => $timeEnd
+            'time_end' => $timeEnd,
+            'subject' => $subject
         ]);
 
         \Websocket::sendToRoom($seat->room_id, Websocket::EVENT_ROOMS_UPDATED, $seat->room);
