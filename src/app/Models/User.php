@@ -13,10 +13,26 @@ class User extends Authenticatable implements JWTSubject
 {
     use Notifiable;
 
-    const USER_MISSED_RESERVATION = 5;
+    /**
+     * increase experience events
+     */
+    const USER_LOGGED_IN = 5;
+    const USER_LOGGED_OUT_ON_TIME = 5;
+
+    /**
+     * decrease experience events
+     */
+    const USER_DID_NOT_SHOW_UP = 5;
+    const USER_DID_NOT_LOGOUT_ON_TIME = 2;
+    const USER_LOGGED_OUT_EARLIER = 3;
+
 
     public static $EXPERIENCE_CHANGE_EVENTS = [
-        self::USER_MISSED_RESERVATION
+        self::USER_DID_NOT_SHOW_UP,
+        self::USER_DID_NOT_LOGOUT_ON_TIME,
+        self::USER_LOGGED_IN,
+        self::USER_LOGGED_OUT_EARLIER,
+        self::USER_LOGGED_OUT_ON_TIME,
     ];
 
     /**
