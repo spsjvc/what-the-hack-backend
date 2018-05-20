@@ -76,7 +76,7 @@ class UserController extends Controller
 
 
             $now = Carbon::now();
-            $reservationEnd = $reservation->time_end;
+            $reservationEnd = new Carbon($reservation->time_end);
             $totalDuration = $reservationEnd->diffInSeconds($now);
             $HALF_AN_HOUR = 60 * 30;
             if ($totalDuration > $HALF_AN_HOUR) {
