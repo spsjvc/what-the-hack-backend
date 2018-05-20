@@ -12,10 +12,12 @@ class Websocket {
 
     const EVENT_ROOMS_UPDATED = 'socket.room.updated';
     const EVENT_ROOMS_CREATED = 'socket.room.created';
+    const EVENT_USER_EXPERIENCE_CHANGE = 'socket.user.experience_change';
 
     public static $availableEvents = [
         self::EVENT_ROOMS_UPDATED,
-        self::EVENT_ROOMS_CREATED
+        self::EVENT_ROOMS_CREATED,
+        self::EVENT_USER_EXPERIENCE_CHANGE
     ];
 
     public function __construct() {

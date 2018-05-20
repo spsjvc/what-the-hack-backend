@@ -7,6 +7,7 @@ use App\Http\Requests\StoreReservationRequest;
 use App\Services\WebsocketGateway\Websocket;
 use App\Models\Seat;
 use App\Models\Reservation;
+use App\Models\User;
 use Carbon\Carbon;
 use Auth;
 

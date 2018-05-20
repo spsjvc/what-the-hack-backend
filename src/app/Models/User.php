@@ -7,10 +7,17 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use App\Models\Seat;
 use App\Models\Reservation;
+use App\Services\WebsocketGateway\Websocket;
 
 class User extends Authenticatable implements JWTSubject
 {
     use Notifiable;
+
+    const USER_MISSED_RESERVATION = 5;
+
+    public static $EXPERIENCE_CHANGE_EVENTS = [
+        self::USER_MISSED_RESERVATION
+    ];
 
     /**
      * The attributes that are mass assignable.
@@ -18,7 +25,7 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'email', 'password', 'points'
     ];
 
     /**
@@ -58,5 +65,25 @@ class User extends Authenticatable implements JWTSubject
     public function reservations()
     {
         return $this->hasMany(Reservation::class);
+    }
+
+    public function increaseExperience($event) {
+        if (!in_array($event, self::$EXPERIENCE_CHANGE_EVENTS)) {
+            throw new \InvalidArgumentException("Invalid experience event name: $event");
+        }
+
+        $this->update(['points' => $this->points + $event]);
+        \Websocket::sendToPublic(Websocket::EVENT_USER_EXPERIENCE_CHANGE, $this);
+    }
+
+    public function decreaseExperience($event) {
+        if (!in_array($event, self::$EXPERIENCE_CHANGE_EVENTS)) {
+            throw new \InvalidArgumentException("Invalid experience event name: $event");
+        }
+
+        if (($this->points - $event) >= 0) {
+            $this->update(['points' => $this->points - $event]);
+            \Websocket::sendToPublic(Websocket::EVENT_USER_EXPERIENCE_CHANGE, $this);
+        }
     }
 }
