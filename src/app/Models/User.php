@@ -72,13 +72,13 @@ class User extends Authenticatable implements JWTSubject
     }
 
     public function increaseExperience($event) {
-        $this->update(['points' => $this->points + self::EXPERIENCE_CHANGE_EVENTS[$event]]);
+        $this->update(['points' => $this->points + $this->EXPERIENCE_CHANGE_EVENTS[$event]]);
         \Websocket::sendToPublic(Websocket::EVENT_USER_EXPERIENCE_CHANGE, ['user' => $this, 'event' => $event]);
     }
 
     public function decreaseExperience($event) {
-        if (($this->points - self::EXPERIENCE_CHANGE_EVENTS[$event]) >= 0) {
-            $this->update(['points' => $this->points - self::EXPERIENCE_CHANGE_EVENTS[$event]]);
+        if (($this->points - $this->EXPERIENCE_CHANGE_EVENTS[$event]) >= 0) {
+            $this->update(['points' => $this->points - $this->EXPERIENCE_CHANGE_EVENTS[$event]]);
             \Websocket::sendToPublic(Websocket::EVENT_USER_EXPERIENCE_CHANGE, ['user' => $this, 'event' => $event]);
         }
     }
