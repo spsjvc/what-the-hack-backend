@@ -24,7 +24,8 @@ class ReservationController extends Controller
             'user_id',
             'seat_id',
             'time_start',
-            'time_end'
+            'time_end',
+            'subject'
         ]);
 
         $payload['time_start'] = new Carbon($payload['time_start']);
