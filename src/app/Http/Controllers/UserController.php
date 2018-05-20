@@ -25,9 +25,11 @@ class UserController extends Controller
 
         if(isset($reservation)) {
             $seat = $reservation->seat;
+            $room = $seat->room;
+            $room->load('reservations');
             if (!isset($reservation->seat->user_id)) {
                 $seat->update(['user_id' => $user->id]);
-                \Websocket::sendToRoom($seat->room_id, Websocket::EVENT_ROOMS_UPDATED, $seat->room);
+                \Websocket::sendToRoom($seat->room_id, Websocket::EVENT_ROOMS_UPDATED, $room);
                 return compact(['user', 'reservation']);
             }
 
@@ -35,7 +37,7 @@ class UserController extends Controller
                 $seat->update(['user_id' => null]);
                 Reservation::where('id', $reservation->id)
                            ->delete();
-                \Websocket::sendToRoom($seat->room_id, Websocket::EVENT_ROOMS_UPDATED, $seat->room);
+                \Websocket::sendToRoom($seat->room_id, Websocket::EVENT_ROOMS_UPDATED, $room);
                 return compact(['user', 'reservation']);
             }
         }
@@ -78,7 +80,9 @@ class UserController extends Controller
             'subject' => $subject
         ]);
 
-        \Websocket::sendToRoom($seat->room_id, Websocket::EVENT_ROOMS_UPDATED, $seat->room);
+        $room = $seat->room;
+        $room->load('reservations');
+        \Websocket::sendToRoom($seat->room_id, Websocket::EVENT_ROOMS_UPDATED, $room);
 
         return compact(['user', 'reservation']);
     }
