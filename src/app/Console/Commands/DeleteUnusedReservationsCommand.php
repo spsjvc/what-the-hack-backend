@@ -5,6 +5,8 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Carbon\Carbon;
 use App\Models\Reservation;
+use App\Models\Room;
+use App\Services\WebsocketGateway\Websocket;
 
 class DeleteUnusedReservationsCommand extends Command
 {
@@ -42,6 +44,16 @@ class DeleteUnusedReservationsCommand extends Command
         $now = Carbon::now();
         $now->second(0);
 
+        $this->invalidateTakenSeats($now);
+        $this->invalidateNotTakenSeats($now);
+
+        $rooms = Room::all();
+        foreach ($rooms as $room) {
+            \Websocket::sendToRoom($room->id, Websocket::EVENT_ROOMS_UPDATED, $room);
+        }
+    }
+
+    private function invalidateTakenSeats($now) {
         $dueReservations = Reservation::join('seats', 'reservations.seat_id', '=', 'seats.id')
                                         ->where('time_end', '<=', $now)
                                         ->whereNotNull('seats.user_id')
@@ -51,12 +63,22 @@ class DeleteUnusedReservationsCommand extends Command
             foreach ($dueReservations as $reservation) {
                 $reservationSeat = $reservation->seat;
                 $reservationSeat->update(['user_id' => null]);
-
-                $reservation->delete();
             }
+            Reservation::join('seats', 'reservations.seat_id', '=', 'seats.id')
+                                        ->where('time_end', '<=', $now)
+                                        ->whereNotNull('seats.user_id')
+                                        ->delete();
             $this->info("All reservations that have expired (before $now), but still had user are deleted.");
         }
+    }
 
-
+    private function invalidateNotTakenSeats($now) {
+        $timeOffset = config('reservation.time_offset');
+        $dueReservations = Reservation::join('seats', 'reservations.seat_id', '=', 'seats.id')
+                                      ->where('time_start', '<=', $now)
+                                      ->where('time_start', '<=', $now->subMinutes($timeOffset))
+                                      ->whereNull('seats.user_id')
+                                      ->delete();
+        $this->info("All reservations that have expired (before $now), but user did not show up are deleted.");
     }
 }
