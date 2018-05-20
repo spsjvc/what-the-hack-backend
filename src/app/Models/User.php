@@ -14,11 +14,11 @@ class User extends Authenticatable implements JWTSubject
     use Notifiable;
 
     public static $EXPERIENCE_CHANGE_EVENTS = [
-        // increase
+        // decrease
         'USER_DID_NOT_SHOW_UP' => 5,
         'USER_DID_NOT_LOGOUT_ON_TIME' => 2,
         'USER_LOGGED_OUT_EARLIER' => 3,
-        // decrease
+        // increase
         'USER_LOGGED_IN' => 5,
         'USER_LOGGED_OUT_ON_TIME' => 5,
     ];

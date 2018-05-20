@@ -19,6 +19,7 @@ Route::group(['middleware' => 'api'], function () {
         Route::post('login', 'Auth\AuthController@login');
         Route::post('logout', 'Auth\AuthController@logout');
         Route::post('me', 'Auth\AuthController@me');
+        Route::get('me', 'Auth\AuthController@me');
     });
 
     Route::group([], function() {
